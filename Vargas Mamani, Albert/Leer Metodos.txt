@@ -1,0 +1,285 @@
+*/el método de Jacobi es un método iterativo, usado para resolver sistemas de ecuaciones lineales del tipo Ax=B. 
+Convergencia El método de Jacobi siempre converge si la matriz A es estrictamente diagonal dominante y puede converger incluso si esta condición no se satisface.  
+
+Podemos probar con esta ecuacion y el resultado sera el siguiente
+
+6x-2y+z=1
+
+2x+8y-z=31
+
+x+y+5z=20
+
+x=1, y=4, z=3
+
+Podemos concluir que:
+Este método puede llegar a divergir en muchas ocasiones debido a que no existe una aproximación exacta del valor 
+de las incógnitas y esta se asigna de forma diferente en cada iteración. El procesamiento que este programa ocupa es bastante bajo; 
+sin embargo, el tiempo es mucho mayor.
+/*
+//Metodo Jacobi
+
+#include<iostream>
+#include<stdlib.h>
+#define n 10
+using namespace std;
+void Jacobi(int l, float x[], float a[][10], float b[]);
+int main() {
+    int i, j, l, cont=0;
+float x[n],a[n][n],b[n], dd, suma;
+    cout<<"Introduce el numero de ecuaciones: ";
+    cin>>l;
+    cout<<"Introduce la matriz con los coeficientes: "<<endl;
+    for(i=0;i<l;i++) {
+        x[i]=0;
+        for(j=0;j<l;j++) {
+         cout<<"a["<<i<<","<<j<<"]= ";
+            cin>>a[i][j];
+        }
+    }
+    cout<<"Introduce el vector de los resultados: "<<endl;
+    for(i=0;i<l;i++) {
+     cout<<"b["<<i<<",0]= ";
+        cin>>b[i];
+    }
+    for(i=0; i<l; i++){
+     suma=0;
+     for(j=0; j<l; j++){
+      if(i==j){
+       dd=a[i][j];
+   }else{
+    suma+=a[i][j];
+   }
+  }
+  if(dd>suma){
+   cont++;
+  }
+ }
+ if(cont==l){
+    Jacobi(l, x, a, b);
+}else{
+ cout<<"La matriz no es diagonalmente dominante (No es el método de jacobi). Proceso finalizado."<<endl;
+}
+ system("PAUSE");
+    return 0;
+}
+void Jacobi(int l, float x[], float a[][10], float b[]){
+ char p;
+ float c[n];
+ int k, i, j;
+    line:
+    for(k=0; k<10; k++){
+    for(i=0;i<l;i++) {
+        c[i]=b[i];
+        for(j=0;j<l;j++) {
+            if(i!=j) {
+                c[i]=c[i]-a[i][j]*x[j];
+            }
+        }
+    }
+    for(i=0;i<n;i++) {
+        x[i]=c[i]/a[i][i];
+    }
+}
+        cout<<"La solucion es: "<<endl;
+        for(i=0;i<l;i++) {
+            cout<<"x("<<i<<") = "<<x[i]<<endl;
+        }
+cout<<"¿Quiere que el resultado sea mas exacto?"<<endl;
+cout<<"(s) Si"<<endl;
+cout<<"(n) No"<<endl;
+cin>>p;
+switch(p){
+case 's': goto line; break;
+case 'n': cout<<"Proceso finalizado."<<endl; break;
+return;
+}
+
+}
+
+*
+*
+*
+*
+/*El método consisten en tener intercambiar filas para evitar ceros en la diagonal principal, por eso el elemento pivote(números en la diagonal) 
+tiene que se mayor en valor absoluto respecto a cada columna, y si este elemento pivote es menor en su columna por el elemento mayor, además se 
+intercambia toda la fila 
+De ahí es el método de gauss simple para despejar las incógnitas 
+Aquí
+un ejemplo de una matriz:
+matriz A 
+
+2 1 -3 
+-1 3 2 
+3 1 -3 
+
+vector B
+-1
+12 
+0 
+
+la matriz resultante --- > 
+
+3 1 -3 
+0 10/3 1 
+0 0 -11/10 
+
+vector B
+0
+12
+-11/5
+
+Soluciones:
+X=1
+Y=3
+Z=2
+/*
+//Metodo Gauss con pivoteo 
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+void allocMatrix(double ***matrix, int fil, int col);
+void deallocMatrix(double **matrix, int fil );
+void leerDatos( double **A, int fil, int col, double B[] );
+void gaussEliminacion( double **A, int fil, int col, double v[] );
+void intercambiarFilas( double **A, int col, int k, int max );
+void imprimirMatriz( double **A, int fil, int col, double v[] );
+void imprimirSolucion( double v[], int fil );
+
+int main()
+{
+
+    int fil, col;
+    printf( "\nNumero de variables: " );
+    scanf( "%d", &fil );
+    col = fil;
+
+
+
+    double** A = NULL;
+    allocMatrix(&A, fil, col);
+
+    double B[fil];
+    leerDatos( A, fil, col, B );
+
+    imprimirMatriz( A, fil, col, B );
+
+    gaussEliminacion( A, fil, col, B );
+
+    deallocMatrix( A, fil );
+
+    return 0;
+}
+void allocMatrix(double ***matrix, int fil, int col )
+{
+    *matrix = (double **)malloc(sizeof(double *) * fil);
+
+    for( int i = 0; i < col; i++){
+
+        *(*matrix + i) = (double *)malloc(sizeof(double) * col);
+
+    }
+
+}
+void deallocMatrix(double **matrix, int fil )
+{
+    int i = 0;
+
+    for(i = 0; i < fil; i++){
+        free(matrix[i]);
+
+    }
+    free(matrix);
+}
+void leerDatos( double **A, int fil, int col, double B[] )
+{
+    printf( "\nIntroduzca coeficientes de la ecuacion dada:\n" );
+
+    for( int i = 0; i < fil; i++ ){
+        printf( "\nFila %d:\n", i + 1 );
+        for( int j = 0; j < col; j++ ) {
+            printf( "Columna %d: ", j + 1 );
+            scanf( "%lf", &A[i][j] );
+        }
+    }
+    printf( "\nIntroduzca la igualdad de la ecuacion dada:\n" );
+    for( int i = 0; i < fil; i++ ){
+        printf( "Fila %d: ", i + 1 );
+        scanf( "%lf", &B[i] );
+    }
+}
+
+void gaussEliminacion( double **A, int fil, int col, double B[] )
+{
+    int max;
+    int N = fil;
+    double factor, temp;
+    for( int k = 0; k < N; k++ ){
+
+        max = k;
+        for( int i = k + 1; i < N; i++ )
+            if( abs( A[i][k] ) > abs( A[max][k] ) )
+                max = i;
+        intercambiarFilas( A, col, k, max );
+        temp = B[k];
+        B[k] = B[max];
+        B[max] = temp;
+
+        for( int i = k + 1; i < N; i++ ) {
+            factor = A[i][k] / A[k][k];
+            B[i] -= factor * B[k];
+            for( int j = k; j < N; j++ )
+                A[i][j] -= factor * A[k][j];
+        }
+    }
+    imprimirMatriz( A, fil, col, B );
+    double solucion[fil];
+    double suma;
+    for( int i = 0; i < fil; i++ )
+
+        solucion[i] = 0.00;
+    for( int i = N - 1; i >= 0; i-- ){
+        suma = 0.0;
+        for( int j = i + 1; j < N; j++ )
+            suma += A[i][j] * solucion[j];
+        solucion[i] = (B[i] - suma) / A[i][i];
+    }
+    imprimirSolucion( solucion, fil );
+}
+void intercambiarFilas( double **M, int col, int k, int max )
+{
+    double temp[col];
+    for( int i = k; i < col; i++ ) {
+        temp[i] = M[k][i];
+        M[k][i] = M[max][i];
+        M[max][i] = temp[i];
+    }
+}
+void imprimirMatriz( double **M, int fil, int col, double v[] )
+{
+    printf( "\nMatriz:\n" );
+    for( int i = 0; i < fil; i++ ){
+
+        for( int j = 0; j < col; j++ ){
+
+            printf( "%.3lf ", M[i][j] );
+        }
+
+        printf( "| %.3lf\n", v[i] );
+    }
+    printf( "\n" );
+
+}
+
+void imprimirSolucion( double v[], int fil )
+{
+    printf( "\nSolucion: " );
+    for( int i = 0; i < fil; i++ )
+
+        printf( "\nX%d: %.3lf", i + 1, v[i] );
+    printf( "\n" );
+
+}
+
+
